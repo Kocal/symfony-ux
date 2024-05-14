@@ -1,0 +1,14 @@
+{
+    "formatter": {
+        "lineWidth": 120,
+        "indentStyle": "space",
+        "indentWidth": 4
+    },
+    "javascript": {
+        "formatter": {
+            "trailingComma": "es5",
+            "bracketSameLine": true,
+            "quoteStyle": "single"
+        }
+    }
+}
