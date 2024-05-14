@@ -6,10 +6,10 @@
     "scripts": {
         "build": "node bin/build_javascript.js && node bin/build_styles.js",
         "test": "bin/run-vitest-all.sh",
-        "lint": "yarn workspaces run eslint src test",
-        "format": "prettier src/*/assets/src/*.ts src/*/assets/test/*.js {,src/*/}*.{json,md} --write",
-        "check-lint": "yarn lint --no-fix",
-        "check-format": "yarn format --no-write --check"
+        "lint": "yarn workspaces run biome lint src test --apply",
+        "format": "biome format src/*/assets/src/*.ts src/*/assets/test/*.js {,src/*/}*.{json,md} --write",
+        "check-lint": "yarn workspaces run biome lint src test",
+        "check-format": "biome format src/*/assets/src/*.ts src/*/assets/test/*.js {,src/*/}*.{json,md}"
     },
     "devDependencies": {
         "@babel/core": "^7.15.8",
