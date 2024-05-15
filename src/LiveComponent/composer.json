@@ -2,11 +2,7 @@
     "name": "symfony/ux-live-component",
     "type": "symfony-bundle",
     "description": "Live components for Symfony",
-    "keywords": [
-        "symfony-ux",
-        "twig",
-        "components"
-    ],
+    "keywords": ["symfony-ux", "twig", "components"],
     "homepage": "https://symfony.com",
     "license": "MIT",
     "authors": [
