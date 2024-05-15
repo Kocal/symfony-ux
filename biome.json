@@ -1,4 +1,22 @@
 {
+    "linter": {
+        "rules": {
+            "suspicious": {
+                "noExplicitAny": "off",
+                "noEmptyBlockStatements": "off"
+            },
+            "complexity": {
+                "noStaticOnlyClass": "off",
+                "noForEach": "off"
+            },
+            "style": {
+                "noParameterAssign": "off"
+            },
+            "performance": {
+                "noDelete": "off"
+            }
+        }
+    },
     "formatter": {
         "lineWidth": 120,
         "indentStyle": "space",

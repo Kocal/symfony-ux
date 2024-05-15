@@ -24,37 +24,5 @@
         "tslib": "^2.3.1",
         "typescript": "^4.4.4",
         "vitest": "^0.34.6"
-    },
-    "eslintConfig": {
-        "root": true,
-        "parser": "@typescript-eslint/parser",
-        "plugins": [
-            "@typescript-eslint"
-        ],
-        "extends": [
-            "eslint:recommended",
-            "prettier",
-            "plugin:@typescript-eslint/eslint-recommended",
-            "plugin:@typescript-eslint/recommended"
-        ],
-        "rules": {
-            "@typescript-eslint/no-explicit-any": "off",
-            "@typescript-eslint/no-empty-function": "off",
-            "@typescript-eslint/ban-ts-comment": "off",
-            "quotes": [
-                "error",
-                "single"
-            ]
-        },
-        "env": {
-            "browser": true
-        },
-        "overrides": [
-            {
-                "files": [
-                    "src/*/assets/test/**/*.ts"
-                ]
-            }
-        ]
     }
 }
