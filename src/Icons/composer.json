@@ -2,12 +2,7 @@
     "name": "symfony/ux-icons",
     "type": "symfony-bundle",
     "description": "Renders local and remote SVG icons in your Twig templates.",
-    "keywords": [
-        "symfony-ux",
-        "twig",
-        "icons",
-        "svg"
-    ],
+    "keywords": ["symfony-ux", "twig", "icons", "svg"],
     "homepage": "https://symfony.com",
     "license": "MIT",
     "authors": [
