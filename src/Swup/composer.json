@@ -2,9 +2,7 @@
     "name": "symfony/ux-swup",
     "type": "symfony-bundle",
     "description": "Swup integration for Symfony",
-    "keywords": [
-        "symfony-ux"
-    ],
+    "keywords": ["symfony-ux"],
     "homepage": "https://symfony.com",
     "license": "MIT",
     "authors": [
