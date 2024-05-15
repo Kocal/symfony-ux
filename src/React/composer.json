@@ -2,9 +2,7 @@
     "name": "symfony/ux-react",
     "type": "symfony-bundle",
     "description": "Integration of React in Symfony",
-    "keywords": [
-        "symfony-ux"
-    ],
+    "keywords": ["symfony-ux"],
     "homepage": "https://symfony.com",
     "license": "MIT",
     "authors": [
