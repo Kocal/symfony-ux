@@ -1,9 +1,7 @@
 {
     "name": "symfony/stimulus-bundle",
     "description": "Integration with your Symfony app & Stimulus!",
-    "keywords": [
-        "symfony-ux"
-    ],
+    "keywords": ["symfony-ux"],
     "license": "MIT",
     "type": "symfony-bundle",
     "authors": [
