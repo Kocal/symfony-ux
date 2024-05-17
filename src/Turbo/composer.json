@@ -2,7 +2,14 @@
     "name": "symfony/ux-turbo",
     "type": "symfony-bundle",
     "description": "Hotwire Turbo integration for Symfony",
-    "keywords": ["symfony-ux", "turbo", "hotwire", "javascript", "turbo-stream", "mercure"],
+    "keywords": [
+        "symfony-ux",
+        "turbo",
+        "hotwire",
+        "javascript",
+        "turbo-stream",
+        "mercure"
+    ],
     "homepage": "https://symfony.com",
     "license": "MIT",
     "authors": [

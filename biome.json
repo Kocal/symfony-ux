@@ -1,4 +1,7 @@
 {
+    "files": {
+        "ignore": ["**/composer.json"]
+    },
     "linter": {
         "rules": {
             "suspicious": {
