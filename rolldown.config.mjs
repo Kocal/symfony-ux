@@ -1,9 +1,26 @@
-const resolve = require('@rollup/plugin-node-resolve');
-const commonjs = require('@rollup/plugin-commonjs');
-const typescript = require('@rollup/plugin-typescript');
-const fs = require('fs');
-const glob = require('glob');
-const path = require('path');
+import { defineConfig } from 'rolldown';
+import glob from 'glob';
+import * as path from 'node:path';
+import fs from 'fs';
+
+const files = [
+    // custom handling for React
+    'src/React/assets/src/loader.ts',
+    'src/React/assets/src/components.ts',
+    // custom handling for Svelte
+    'src/Svelte/assets/src/loader.ts',
+    'src/Svelte/assets/src/components.ts',
+    // custom handling for Vue
+    'src/Vue/assets/src/loader.ts',
+    'src/Vue/assets/src/components.ts',
+    // custom handling for StimulusBundle
+    'src/StimulusBundle/assets/src/loader.ts',
+    'src/StimulusBundle/assets/src/controllers.ts',
+    // custom handling for Bridge
+    ...glob.sync('src/*/src/Bridge/*/assets/src/*controller.ts'),
+    ...glob.sync('src/*/assets/src/*controller.ts'),
+];
+
 
 /**
  * Guarantees that any files imported from a peer dependency are treated as an external.
@@ -65,51 +82,37 @@ const moveTypescriptDeclarationsPlugin = (packagePath) => ({
     }
 });
 
-const file = process.env.INPUT_FILE;
-const packageRoot = path.join(file, '..', '..');
-const packagePath = path.join(packageRoot, 'package.json');
-const packageData = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
-const peerDependencies = [
-    '@hotwired/stimulus',
-    ...(packageData.peerDependencies ? Object.keys(packageData.peerDependencies) : [])
-];
+export default defineConfig([
+    ...files.map(file => {
+        const packageRoot = path.join(file, '..', '..');
+        const packagePath = path.join(packageRoot, 'package.json');
+        const packageData = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
+        const peerDependencies = [
+            '@hotwired/stimulus',
+            ...(packageData.peerDependencies ? Object.keys(packageData.peerDependencies) : []),
+        ];
 
-// custom handling for StimulusBundle
-if (file.includes('StimulusBundle/assets/src/loader.ts')) {
-    peerDependencies.push('./controllers.js');
-}
-// React, Vue
-if (file.includes('assets/src/loader.ts')) {
-    peerDependencies.push('./components.js');
-}
+        // custom handling for StimulusBundle
+        if (file.includes('StimulusBundle/assets/src/loader.ts')) {
+            peerDependencies.push('./controllers.js');
+        }
+        
+        // React, Vue
+        if (file.includes('assets/src/loader.ts')) {
+            peerDependencies.push('./components.js');
+        }
 
-module.exports = {
-    input: file,
-    output: {
-        file: path.join(packageRoot, 'dist', path.basename(file, '.ts') + '.js'),
-        format: 'esm',
-    },
-    external: peerDependencies,
-    plugins: [
-        resolve(),
-        typescript({
-            filterRoot: packageRoot,
-            include: [
-                'src/**/*.ts', 
-                // TODO: Remove for the next major release
-                // "@rollup/plugin-typescript" v11.0.0 fixed an issue (https://github.com/rollup/plugins/pull/1310) that 
-                // cause a breaking change for UX React users, the dist file requires "react-dom/client" instead of "react-dom"
-                // and it will break for users using the Symfony AssetMapper without Symfony Flex (for automatic "importmap.php" upgrade).
-                '**/node_modules/react-dom/client.js'
-            ],
-            compilerOptions: {
-                outDir: '.',
-                declaration: true,
-                emitDeclarationOnly: true,
-            }
-        }),
-        commonjs(),
-        wildcardExternalsPlugin(peerDependencies),
-        moveTypescriptDeclarationsPlugin(packageRoot),
-    ],
-};
+        return {
+            input: file,
+            output: {
+                dir: path.join(packageRoot, 'dist'),
+                format: 'esm',
+            },
+            external: peerDependencies,
+            plugins: [
+                wildcardExternalsPlugin(peerDependencies),
+                moveTypescriptDeclarationsPlugin(packageRoot),
+            ]
+        };
+    }),
+]);
