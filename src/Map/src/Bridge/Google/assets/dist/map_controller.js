@@ -52,11 +52,27 @@ class default_1 extends AbstractMapController {
             map: this.map,
         });
         if (infoWindow) {
-            this.createInfoWindow({ definition: infoWindow, marker });
+            this.createInfoWindowMarker({ definition: infoWindow, marker });
         }
         return marker;
     }
-    doCreateInfoWindow({ definition, marker, }) {
+    doCreatePolygon(definition) {
+        const { points, title, infoWindow, rawOptions = {}, extra } = definition;
+        const latLngs = points.map((point) => ({ lat: point.lat, lng: point.lng }));
+        const polygon = new _google.maps.Polygon({
+            ...rawOptions,
+            paths: latLngs,
+            map: this.map,
+        });
+        if (title) {
+            polygon.set('title', title);
+        }
+        if (infoWindow) {
+            this.createInfoWindowPolygon({ definition: infoWindow, polygon });
+        }
+        return polygon;
+    }
+    doCreateInfoWindowMarker({ definition, marker, }) {
         const { headerContent, content, extra, rawOptions = {}, ...otherOptions } = definition;
         const infoWindow = new _google.maps.InfoWindow({
             headerContent: this.createTextOrElement(headerContent),
@@ -79,6 +95,23 @@ class default_1 extends AbstractMapController {
                 map: this.map,
                 anchor: marker,
             });
+        });
+        return infoWindow;
+    }
+    doCreateInfoWindowPolygon({ definition, polygon, }) {
+        const { headerContent, content, extra, rawOptions = {}, ...otherOptions } = definition;
+        const infoWindow = new _google.maps.InfoWindow({
+            headerContent: this.createTextOrElement(headerContent),
+            content: this.createTextOrElement(content),
+            ...otherOptions,
+            ...rawOptions,
+        });
+        polygon.addListener('click', (event) => {
+            if (definition.autoClose) {
+                this.closeInfoWindowsExcept(infoWindow);
+            }
+            infoWindow.setPosition(event.latLng);
+            infoWindow.open(this.map);
         });
         return infoWindow;
     }

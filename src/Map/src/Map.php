@@ -30,6 +30,11 @@ final class Map
          * @var array<Marker>
          */
         private array $markers = [],
+
+        /**
+         * @var array<Polygon>
+         */
+        private array $polygons = [],
     ) {
     }
 
@@ -83,6 +88,12 @@ final class Map
         return $this;
     }
 
+    public function addPolygon(Polygon $polygon): self
+    {
+        $this->polygons[] = $polygon;
+
+        return $this;
+    }
     public function toArray(): array
     {
         if (!$this->fitBoundsToMarkers) {
@@ -101,6 +112,7 @@ final class Map
             'fitBoundsToMarkers' => $this->fitBoundsToMarkers,
             'options' => (object) ($this->options?->toArray() ?? []),
             'markers' => array_map(static fn (Marker $marker) => $marker->toArray(), $this->markers),
+            'polygons' => array_map(static fn (Polygon $polygon) => $polygon->toArray(), $this->polygons),
         ];
     }
 

@@ -8,7 +8,7 @@
  */
 
 import AbstractMapController from '@symfony/ux-map/abstract-map-controller';
-import type { Point, MarkerDefinition } from '@symfony/ux-map/abstract-map-controller';
+import type { Point, MarkerDefinition, PolygonDefinition } from '@symfony/ux-map/abstract-map-controller';
 import type { LoaderOptions } from '@googlemaps/js-api-loader';
 import { Loader } from '@googlemaps/js-api-loader';
 
@@ -121,13 +121,37 @@ export default class extends AbstractMapController<
         });
 
         if (infoWindow) {
-            this.createInfoWindow({ definition: infoWindow, marker });
+            this.createInfoWindowMarker({ definition: infoWindow, marker });
         }
 
         return marker;
     }
 
-    protected doCreateInfoWindow({
+    protected doCreatePolygon(
+        definition: PolygonDefinition<google.maps.Polygon, google.maps.InfoWindowOptions>
+    ): google.maps.Polygon {
+        const { points, title, infoWindow, rawOptions = {}, extra } = definition;
+
+        const latLngs = points.map((point) => ({ lat: point.lat, lng: point.lng }));
+
+        const polygon = new _google.maps.Polygon({
+            ...rawOptions,
+            paths: latLngs,
+            map: this.map,
+        });
+
+        if (title) {
+            polygon.set('title', title);
+        }
+
+        if (infoWindow) {
+            this.createInfoWindowPolygon({ definition: infoWindow, polygon });
+        }
+
+        return polygon;
+    }
+
+    protected doCreateInfoWindowMarker({
         definition,
         marker,
     }: {
@@ -163,6 +187,35 @@ export default class extends AbstractMapController<
                 map: this.map,
                 anchor: marker,
             });
+        });
+
+        return infoWindow;
+    }
+
+    protected doCreateInfoWindowPolygon({
+        definition,
+        polygon,
+    }: {
+        definition: MarkerDefinition<google.maps.Polygon, google.maps.InfoWindowOptions>['infoWindow'];
+        polygon: google.maps.Polygon;
+    }): google.maps.InfoWindow {
+        const { headerContent, content, extra, rawOptions = {}, ...otherOptions } = definition;
+
+        const infoWindow = new _google.maps.InfoWindow({
+            headerContent: this.createTextOrElement(headerContent),
+            content: this.createTextOrElement(content),
+            ...otherOptions,
+            ...rawOptions,
+        });
+
+        polygon.addListener('click', (event: any) => {
+            if (definition.autoClose) {
+                this.closeInfoWindowsExcept(infoWindow);
+            }
+
+            infoWindow.setPosition(event.latLng);
+
+            infoWindow.open(this.map);
         });
 
         return infoWindow;

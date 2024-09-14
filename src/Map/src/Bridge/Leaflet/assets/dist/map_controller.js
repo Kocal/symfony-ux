@@ -38,17 +38,41 @@ class map_controller extends AbstractMapController {
         const { position, title, infoWindow, extra, rawOptions = {}, ...otherOptions } = definition;
         const marker = L.marker(position, { title, ...otherOptions, ...rawOptions }).addTo(this.map);
         if (infoWindow) {
-            this.createInfoWindow({ definition: infoWindow, marker });
+            this.createInfoWindowMarker({ definition: infoWindow, marker });
         }
         return marker;
     }
-    doCreateInfoWindow({ definition, marker, }) {
+    doCreatePolygon(definition) {
+        const { points, title, rawOptions = {}, extra } = definition;
+        const latLngs = points.map((point) => [point.lat, point.lng]);
+        const polygon = L.polygon(latLngs, { ...rawOptions }).addTo(this.map);
+        if (title) {
+            polygon.bindPopup(title);
+        }
+        if (definition.infoWindow) {
+            this.createInfoWindowPolygon({ definition: definition.infoWindow, polygon });
+        }
+        return polygon;
+    }
+    doCreateInfoWindowMarker({ definition, marker, }) {
         const { headerContent, content, extra, rawOptions = {}, ...otherOptions } = definition;
         marker.bindPopup([headerContent, content].filter((x) => x).join('<br>'), { ...otherOptions, ...rawOptions });
         if (definition.opened) {
             marker.openPopup();
         }
         const popup = marker.getPopup();
+        if (!popup) {
+            throw new Error('Unable to get the Popup associated to the Marker, this should not happens.');
+        }
+        return popup;
+    }
+    doCreateInfoWindowPolygon({ definition, polygon, }) {
+        const { headerContent, content, extra, rawOptions = {}, ...otherOptions } = definition;
+        polygon.bindPopup([headerContent, content].filter((x) => x).join('<br>'), { ...otherOptions, ...rawOptions });
+        if (definition.opened) {
+            polygon.openPopup();
+        }
+        const popup = polygon.getPopup();
         if (!popup) {
             throw new Error('Unable to get the Popup associated to the Marker, this should not happens.');
         }

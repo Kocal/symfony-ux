@@ -1,8 +1,8 @@
 import AbstractMapController from '@symfony/ux-map/abstract-map-controller';
-import type { Point, MarkerDefinition } from '@symfony/ux-map/abstract-map-controller';
+import type { Point, MarkerDefinition, PolygonDefinition } from '@symfony/ux-map/abstract-map-controller';
 import 'leaflet/dist/leaflet.min.css';
 import * as L from 'leaflet';
-import type { MapOptions as LeafletMapOptions, MarkerOptions, PopupOptions } from 'leaflet';
+import type { MapOptions as LeafletMapOptions, MarkerOptions, PopupOptions, PolygonOptions } from 'leaflet';
 
 type MapOptions = Pick<LeafletMapOptions, 'center' | 'zoom'> & {
     tileLayer: { url: string; attribution: string; options: Record<string, unknown> };
@@ -63,13 +63,34 @@ export default class extends AbstractMapController<
         const marker = L.marker(position, { title, ...otherOptions, ...rawOptions }).addTo(this.map);
 
         if (infoWindow) {
-            this.createInfoWindow({ definition: infoWindow, marker });
+            this.createInfoWindowMarker({ definition: infoWindow, marker });
         }
 
         return marker;
     }
 
-    protected doCreateInfoWindow({
+    protected doCreatePolygon(definition: PolygonDefinition): L.Polygon {
+        const { points, title, rawOptions = {}, extra } = definition;
+
+        // Convertir les points en latlngs pour Leaflet
+        const latLngs = points.map((point) => [point.lat, point.lng]);
+
+        // Créer le polygone avec les points et les options supplémentaires
+        const polygon = L.polygon(latLngs, { ...rawOptions }).addTo(this.map);
+
+        // Si un titre est défini, on peut l'ajouter en tant que popup au polygone
+        if (title) {
+            polygon.bindPopup(title);
+        }
+
+        if (definition.infoWindow) {
+            this.createInfoWindowPolygon({ definition: definition.infoWindow, polygon });
+        }
+
+        return polygon;
+    }
+
+    protected doCreateInfoWindowMarker({
         definition,
         marker,
     }: {
@@ -84,6 +105,27 @@ export default class extends AbstractMapController<
         }
 
         const popup = marker.getPopup();
+        if (!popup) {
+            throw new Error('Unable to get the Popup associated to the Marker, this should not happens.');
+        }
+        return popup;
+    }
+
+    protected doCreateInfoWindowPolygon({
+        definition,
+        polygon,
+    }: {
+        definition: PolygonDefinition['infoWindow'];
+        marker: L.Polygon;
+    }): L.Popup {
+        const { headerContent, content, extra, rawOptions = {}, ...otherOptions } = definition;
+
+        polygon.bindPopup([headerContent, content].filter((x) => x).join('<br>'), { ...otherOptions, ...rawOptions });
+        if (definition.opened) {
+            polygon.openPopup();
+        }
+
+        const popup = polygon.getPopup();
         if (!popup) {
             throw new Error('Unable to get the Popup associated to the Marker, this should not happens.');
         }

@@ -5,18 +5,21 @@ class default_1 extends Controller {
         super(...arguments);
         this.markers = [];
         this.infoWindows = [];
+        this.polygons = [];
     }
     connect() {
-        const { center, zoom, options, markers, fitBoundsToMarkers } = this.viewValue;
+        const { center, zoom, options, markers, polygons, fitBoundsToMarkers } = this.viewValue;
         this.dispatchEvent('pre-connect', { options });
         this.map = this.doCreateMap({ center, zoom, options });
         markers.forEach((marker) => this.createMarker(marker));
+        polygons.forEach((polygon) => this.createPolygon(polygon));
         if (fitBoundsToMarkers) {
             this.doFitBoundsToMarkers();
         }
         this.dispatchEvent('connect', {
             map: this.map,
             markers: this.markers,
+            polygons: this.polygons,
             infoWindows: this.infoWindows,
         });
     }
@@ -27,10 +30,24 @@ class default_1 extends Controller {
         this.markers.push(marker);
         return marker;
     }
-    createInfoWindow({ definition, marker, }) {
-        this.dispatchEvent('info-window:before-create', { definition, marker });
-        const infoWindow = this.doCreateInfoWindow({ definition, marker });
-        this.dispatchEvent('info-window:after-create', { infoWindow, marker });
+    createPolygon(definition) {
+        this.dispatchEvent('polygon:before-create', { definition });
+        const polygon = this.doCreatePolygon(definition);
+        this.dispatchEvent('polygon:after-create', { polygon });
+        this.polygons.push(polygon);
+        return polygon;
+    }
+    createInfoWindowMarker({ definition, marker, }) {
+        this.dispatchEvent('info-window-marker:before-create', { definition, marker });
+        const infoWindow = this.doCreateInfoWindowMarker({ definition, marker });
+        this.dispatchEvent('info-window-marker:after-create', { infoWindow, marker });
+        this.infoWindows.push(infoWindow);
+        return infoWindow;
+    }
+    createInfoWindowPolygon({ definition, polygon, }) {
+        this.dispatchEvent('info-window-polygon:before-create', { definition, polygon });
+        const infoWindow = this.doCreateInfoWindowPolygon({ definition, polygon });
+        this.dispatchEvent('info-window-polygon:after-create', { infoWindow, polygon });
         this.infoWindows.push(infoWindow);
         return infoWindow;
     }
