@@ -94,6 +94,7 @@ final class Map
 
         return $this;
     }
+
     public function toArray(): array
     {
         if (!$this->fitBoundsToMarkers) {

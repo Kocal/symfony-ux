@@ -11,14 +11,14 @@
 
 namespace Symfony\UX\Map\Tests;
 
-use Symfony\UX\Map\Polygon;
-use Symfony\UX\Map\Map;
-use Symfony\UX\Map\Point;
-use Symfony\UX\Map\Marker;
-use Symfony\UX\Map\InfoWindow;
 use PHPUnit\Framework\TestCase;
-use Symfony\UX\Map\MapOptionsInterface;
 use Symfony\UX\Map\Exception\InvalidArgumentException;
+use Symfony\UX\Map\InfoWindow;
+use Symfony\UX\Map\Map;
+use Symfony\UX\Map\MapOptionsInterface;
+use Symfony\UX\Map\Marker;
+use Symfony\UX\Map\Point;
+use Symfony\UX\Map\Polygon;
 
 class MapTest extends TestCase
 {
@@ -195,7 +195,7 @@ class MapTest extends TestCase
                     'extra' => $array['polygons'][0]['extra'],
                     'rawOptions' => $array['polygons'][0]['rawOptions'],
                 ],
-                [ 
+                [
                     'points' => [
                         ['lat' => 45.764043, 'lng' => 4.835659],
                         ['lat' => 45.75, 'lng' => 4.85],
