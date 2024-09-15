@@ -7,6 +7,7 @@
 -   Add `ux_map` Twig function (replaces `render_map` with a more flexible 
     interface)
 -   Add `<twig:ux:map />` Twig component
+-   Add `Polygon` support
 
 ## 2.19
 
