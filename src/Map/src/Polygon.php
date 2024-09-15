@@ -36,7 +36,7 @@ final readonly class Polygon
     public function toArray(): array
     {
         return [
-            'points' => array_map(fn (Point $point) => $point->toArray(), $this->points), // Conversion des points en tableau
+            'points' => array_map(fn (Point $point) => $point->toArray(), $this->points),
             'title' => $this->title,
             'rawOptions' => (object) $this->rawOptions,
             'infoWindow' => $this->infoWindow?->toArray(),

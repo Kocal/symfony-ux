@@ -37,17 +37,10 @@ class default_1 extends Controller {
         this.polygons.push(polygon);
         return polygon;
     }
-    createInfoWindowMarker({ definition, marker, }) {
-        this.dispatchEvent('info-window-marker:before-create', { definition, marker });
-        const infoWindow = this.doCreateInfoWindowMarker({ definition, marker });
-        this.dispatchEvent('info-window-marker:after-create', { infoWindow, marker });
-        this.infoWindows.push(infoWindow);
-        return infoWindow;
-    }
-    createInfoWindowPolygon({ definition, polygon, }) {
-        this.dispatchEvent('info-window-polygon:before-create', { definition, polygon });
-        const infoWindow = this.doCreateInfoWindowPolygon({ definition, polygon });
-        this.dispatchEvent('info-window-polygon:after-create', { infoWindow, polygon });
+    createInfoWindow({ definition, element, }) {
+        this.dispatchEvent('info-window:before-create', { definition, element });
+        const infoWindow = this.doCreateInfoWindow({ definition, element });
+        this.dispatchEvent('info-window:after-create', { infoWindow, element });
         this.infoWindows.push(infoWindow);
         return infoWindow;
     }

@@ -20,13 +20,9 @@ export default class extends AbstractMapController<MapOptions, typeof L.Map, Mar
     }): L.Map;
     protected doCreateMarker(definition: MarkerDefinition): L.Marker;
     protected doCreatePolygon(definition: PolygonDefinition): L.Polygon;
-    protected doCreateInfoWindowMarker({ definition, marker, }: {
-        definition: MarkerDefinition['infoWindow'];
-        marker: L.Marker;
-    }): L.Popup;
-    protected doCreateInfoWindowPolygon({ definition, polygon, }: {
-        definition: PolygonDefinition['infoWindow'];
-        marker: L.Polygon;
+    protected doCreateInfoWindow({ definition, element, }: {
+        definition: MarkerDefinition['infoWindow'] | PolygonDefinition['infoWindow'];
+        element: L.Marker | L.Polygon;
     }): L.Popup;
     protected doFitBoundsToMarkers(): void;
 }

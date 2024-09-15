@@ -38,43 +38,30 @@ class map_controller extends AbstractMapController {
         const { position, title, infoWindow, extra, rawOptions = {}, ...otherOptions } = definition;
         const marker = L.marker(position, { title, ...otherOptions, ...rawOptions }).addTo(this.map);
         if (infoWindow) {
-            this.createInfoWindowMarker({ definition: infoWindow, marker });
+            this.createInfoWindow({ definition: infoWindow, element: marker });
         }
         return marker;
     }
     doCreatePolygon(definition) {
-        const { points, title, rawOptions = {}, extra } = definition;
-        const latLngs = points.map((point) => [point.lat, point.lng]);
-        const polygon = L.polygon(latLngs, { ...rawOptions }).addTo(this.map);
+        const { points, title, infoWindow, rawOptions = {}, extra } = definition;
+        const polygon = L.polygon(points, { ...rawOptions }).addTo(this.map);
         if (title) {
             polygon.bindPopup(title);
         }
-        if (definition.infoWindow) {
-            this.createInfoWindowPolygon({ definition: definition.infoWindow, polygon });
+        if (infoWindow) {
+            this.createInfoWindow({ definition: infoWindow, element: polygon });
         }
         return polygon;
     }
-    doCreateInfoWindowMarker({ definition, marker, }) {
-        const { headerContent, content, extra, rawOptions = {}, ...otherOptions } = definition;
-        marker.bindPopup([headerContent, content].filter((x) => x).join('<br>'), { ...otherOptions, ...rawOptions });
+    doCreateInfoWindow({ definition, element, }) {
+        const { headerContent, content, rawOptions = {}, ...otherOptions } = definition;
+        element.bindPopup([headerContent, content].filter((x) => x).join('<br>'), { ...otherOptions, ...rawOptions });
         if (definition.opened) {
-            marker.openPopup();
+            element.openPopup();
         }
-        const popup = marker.getPopup();
+        const popup = element.getPopup();
         if (!popup) {
-            throw new Error('Unable to get the Popup associated to the Marker, this should not happens.');
-        }
-        return popup;
-    }
-    doCreateInfoWindowPolygon({ definition, polygon, }) {
-        const { headerContent, content, extra, rawOptions = {}, ...otherOptions } = definition;
-        polygon.bindPopup([headerContent, content].filter((x) => x).join('<br>'), { ...otherOptions, ...rawOptions });
-        if (definition.opened) {
-            polygon.openPopup();
-        }
-        const popup = polygon.getPopup();
-        if (!popup) {
-            throw new Error('Unable to get the Popup associated to the Marker, this should not happens.');
+            throw new Error('Unable to get the Popup associated with the element.');
         }
         return popup;
     }

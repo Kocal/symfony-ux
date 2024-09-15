@@ -16,13 +16,9 @@ export default class extends AbstractMapController<MapOptions, google.maps.Map, 
     }): google.maps.Map;
     protected doCreateMarker(definition: MarkerDefinition<google.maps.marker.AdvancedMarkerElementOptions, google.maps.InfoWindowOptions>): google.maps.marker.AdvancedMarkerElement;
     protected doCreatePolygon(definition: PolygonDefinition<google.maps.Polygon, google.maps.InfoWindowOptions>): google.maps.Polygon;
-    protected doCreateInfoWindowMarker({ definition, marker, }: {
-        definition: MarkerDefinition<google.maps.marker.AdvancedMarkerElementOptions, google.maps.InfoWindowOptions>['infoWindow'];
-        marker: google.maps.marker.AdvancedMarkerElement;
-    }): google.maps.InfoWindow;
-    protected doCreateInfoWindowPolygon({ definition, polygon, }: {
-        definition: MarkerDefinition<google.maps.Polygon, google.maps.InfoWindowOptions>['infoWindow'];
-        polygon: google.maps.Polygon;
+    protected doCreateInfoWindow({ definition, element, }: {
+        definition: MarkerDefinition<google.maps.marker.AdvancedMarkerElementOptions, google.maps.InfoWindowOptions>['infoWindow'] | PolygonDefinition<google.maps.Polygon, google.maps.InfoWindowOptions>['infoWindow'];
+        element: google.maps.marker.AdvancedMarkerElement | google.maps.Polygon;
     }): google.maps.InfoWindow;
     private createTextOrElement;
     private closeInfoWindowsExcept;

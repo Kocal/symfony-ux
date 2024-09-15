@@ -133,52 +133,32 @@ export default abstract class<
     protected abstract doCreateMarker(definition: MarkerDefinition<MarkerOptions, InfoWindowOptions>): Marker;
     protected abstract doCreatePolygon(definition: PolygonDefinition<PolygonOptions, InfoWindowOptions>): Polygon;
 
-    protected createInfoWindowMarker({
+    protected createInfoWindow({
         definition,
-        marker,
+        element,
     }: {
-        definition: MarkerDefinition<MarkerOptions, InfoWindowOptions>['infoWindow'];
-        marker: Marker;
+        definition:
+            | MarkerDefinition<MarkerOptions, InfoWindowOptions>['infoWindow']
+            | PolygonDefinition<PolygonOptions, InfoWindowOptions>['infoWindow'];
+        element: Marker | Polygon;
     }): InfoWindow {
-        this.dispatchEvent('info-window-marker:before-create', { definition, marker });
-        const infoWindow = this.doCreateInfoWindowMarker({ definition, marker });
-        this.dispatchEvent('info-window-marker:after-create', { infoWindow, marker });
+        this.dispatchEvent('info-window:before-create', { definition, element });
+        const infoWindow = this.doCreateInfoWindow({ definition, element });
+        this.dispatchEvent('info-window:after-create', { infoWindow, element });
 
         this.infoWindows.push(infoWindow);
 
         return infoWindow;
     }
 
-    protected createInfoWindowPolygon({
+    protected abstract doCreateInfoWindow({
         definition,
-        polygon,
+        element,
     }: {
-        definition: PolygonDefinition<PolygonOptions, InfoWindowOptions>['infoWindow'];
-        polygon: Polygon;
-    }): InfoWindow {
-        this.dispatchEvent('info-window-polygon:before-create', { definition, polygon });
-        const infoWindow = this.doCreateInfoWindowPolygon({ definition, polygon });
-        this.dispatchEvent('info-window-polygon:after-create', { infoWindow, polygon });
-
-        this.infoWindows.push(infoWindow);
-
-        return infoWindow;
-    }
-
-    protected abstract doCreateInfoWindowMarker({
-        definition,
-        marker,
-    }: {
-        definition: MarkerDefinition<MarkerOptions, InfoWindowOptions>['infoWindow'];
-        marker: Marker;
-    }): InfoWindow;
-
-    protected abstract doCreateInfoWindowPolygon({
-        definition,
-        polygon,
-    }: {
-        definition: PolygonDefinition<PolygonOptions, InfoWindowOptions>['infoWindow'];
-        polygon: Polygon;
+        definition:
+            | MarkerDefinition<MarkerOptions, InfoWindowOptions>['infoWindow']
+            | PolygonDefinition<PolygonOptions, InfoWindowOptions>['infoWindow'];
+        element: Marker | Polygon;
     }): InfoWindow;
 
     protected abstract doFitBoundsToMarkers(): void;

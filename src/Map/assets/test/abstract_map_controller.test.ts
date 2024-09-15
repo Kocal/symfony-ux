@@ -20,7 +20,7 @@ class MyMapController extends AbstractMapController {
         const marker = { marker: 'marker', title: definition.title };
 
         if (definition.infoWindow) {
-            this.createInfoWindowMarker({ definition: definition.infoWindow, marker });
+            this.createInfoWindow({ definition: definition.infoWindow, element: marker });
         }
 
         return marker;
@@ -30,17 +30,18 @@ class MyMapController extends AbstractMapController {
         const polygon = { polygon: 'polygon', title: definition.title };
 
         if (definition.infoWindow) {
-            this.createInfoWindowPolygon({ definition: definition.infoWindow, polygon });
+            this.createInfoWindow({ definition: definition.infoWindow, element: polygon });
         }
         return polygon;
     }
 
-    doCreateInfoWindowPolygon({ definition, polygon }) {
-        return { infoWindow: 'infoWindow', headerContent: definition.headerContent, polygon: polygon.title };
-    }
-
-    doCreateInfoWindowMarker({ definition, marker }) {
-        return { infoWindow: 'infoWindow', headerContent: definition.headerContent, marker: marker.title };
+    doCreateInfoWindow({ definition, element }) {
+        if (element.marker) {
+            return { infoWindow: 'infoWindow', headerContent: definition.headerContent, marker: element.title };
+        }
+        if (element.polygon) {
+            return { infoWindow: 'infoWindow', headerContent: definition.headerContent, polygon: element.title };
+        }
     }
 
     doFitBoundsToMarkers() {
@@ -122,7 +123,7 @@ describe('AbstractMapController', () => {
         clearDOM();
     });
 
-    it('connect and create map, marker and info window', async () => {
+    it('connect and create map, marker, polygon and info window', async () => {
         const div = getByTestId(container, 'map');
         expect(div).not.toHaveClass('connected');
 

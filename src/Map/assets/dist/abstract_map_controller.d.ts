@@ -54,21 +54,13 @@ export default abstract class<MapOptions, Map, MarkerOptions, Marker, InfoWindow
     createPolygon(definition: PolygonDefinition<PolygonOptions, InfoWindowOptions>): Polygon;
     protected abstract doCreateMarker(definition: MarkerDefinition<MarkerOptions, InfoWindowOptions>): Marker;
     protected abstract doCreatePolygon(definition: PolygonDefinition<PolygonOptions, InfoWindowOptions>): Polygon;
-    protected createInfoWindowMarker({ definition, marker, }: {
-        definition: MarkerDefinition<MarkerOptions, InfoWindowOptions>['infoWindow'];
-        marker: Marker;
+    protected createInfoWindow({ definition, element, }: {
+        definition: MarkerDefinition<MarkerOptions, InfoWindowOptions>['infoWindow'] | PolygonDefinition<PolygonOptions, InfoWindowOptions>['infoWindow'];
+        element: Marker | Polygon;
     }): InfoWindow;
-    protected createInfoWindowPolygon({ definition, polygon, }: {
-        definition: PolygonDefinition<PolygonOptions, InfoWindowOptions>['infoWindow'];
-        polygon: Polygon;
-    }): InfoWindow;
-    protected abstract doCreateInfoWindowMarker({ definition, marker, }: {
-        definition: MarkerDefinition<MarkerOptions, InfoWindowOptions>['infoWindow'];
-        marker: Marker;
-    }): InfoWindow;
-    protected abstract doCreateInfoWindowPolygon({ definition, polygon, }: {
-        definition: PolygonDefinition<PolygonOptions, InfoWindowOptions>['infoWindow'];
-        polygon: Polygon;
+    protected abstract doCreateInfoWindow({ definition, element, }: {
+        definition: MarkerDefinition<MarkerOptions, InfoWindowOptions>['infoWindow'] | PolygonDefinition<PolygonOptions, InfoWindowOptions>['infoWindow'];
+        element: Marker | Polygon;
     }): InfoWindow;
     protected abstract doFitBoundsToMarkers(): void;
     protected abstract dispatchEvent(name: string, payload: Record<string, unknown>): void;

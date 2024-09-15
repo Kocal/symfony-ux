@@ -63,72 +63,48 @@ export default class extends AbstractMapController<
         const marker = L.marker(position, { title, ...otherOptions, ...rawOptions }).addTo(this.map);
 
         if (infoWindow) {
-            this.createInfoWindowMarker({ definition: infoWindow, marker });
+            this.createInfoWindow({ definition: infoWindow, element: marker });
         }
 
         return marker;
     }
 
     protected doCreatePolygon(definition: PolygonDefinition): L.Polygon {
-        const { points, title, rawOptions = {}, extra } = definition;
+        const { points, title, infoWindow, rawOptions = {}, extra } = definition;
 
-        // Convertir les points en latlngs pour Leaflet
-        const latLngs = points.map((point) => [point.lat, point.lng]);
+        const polygon = L.polygon(points, { ...rawOptions }).addTo(this.map);
 
-        // Créer le polygone avec les points et les options supplémentaires
-        const polygon = L.polygon(latLngs, { ...rawOptions }).addTo(this.map);
-
-        // Si un titre est défini, on peut l'ajouter en tant que popup au polygone
         if (title) {
             polygon.bindPopup(title);
         }
 
-        if (definition.infoWindow) {
-            this.createInfoWindowPolygon({ definition: definition.infoWindow, polygon });
+        if (infoWindow) {
+            this.createInfoWindow({ definition: infoWindow, element: polygon });
         }
 
         return polygon;
     }
 
-    protected doCreateInfoWindowMarker({
+    protected doCreateInfoWindow({
         definition,
-        marker,
+        element,
     }: {
-        definition: MarkerDefinition['infoWindow'];
-        marker: L.Marker;
+        definition: MarkerDefinition['infoWindow'] | PolygonDefinition['infoWindow'];
+        element: L.Marker | L.Polygon;
     }): L.Popup {
-        const { headerContent, content, extra, rawOptions = {}, ...otherOptions } = definition;
+        const { headerContent, content, rawOptions = {}, ...otherOptions } = definition;
 
-        marker.bindPopup([headerContent, content].filter((x) => x).join('<br>'), { ...otherOptions, ...rawOptions });
+        element.bindPopup([headerContent, content].filter((x) => x).join('<br>'), { ...otherOptions, ...rawOptions });
+
         if (definition.opened) {
-            marker.openPopup();
+            element.openPopup();
         }
 
-        const popup = marker.getPopup();
+        const popup = element.getPopup();
         if (!popup) {
-            throw new Error('Unable to get the Popup associated to the Marker, this should not happens.');
-        }
-        return popup;
-    }
-
-    protected doCreateInfoWindowPolygon({
-        definition,
-        polygon,
-    }: {
-        definition: PolygonDefinition['infoWindow'];
-        marker: L.Polygon;
-    }): L.Popup {
-        const { headerContent, content, extra, rawOptions = {}, ...otherOptions } = definition;
-
-        polygon.bindPopup([headerContent, content].filter((x) => x).join('<br>'), { ...otherOptions, ...rawOptions });
-        if (definition.opened) {
-            polygon.openPopup();
+            throw new Error('Unable to get the Popup associated with the element.');
         }
 
-        const popup = polygon.getPopup();
-        if (!popup) {
-            throw new Error('Unable to get the Popup associated to the Marker, this should not happens.');
-        }
         return popup;
     }
 

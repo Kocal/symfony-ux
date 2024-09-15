@@ -121,7 +121,7 @@ export default class extends AbstractMapController<
         });
 
         if (infoWindow) {
-            this.createInfoWindowMarker({ definition: infoWindow, marker });
+            this.createInfoWindow({ definition: infoWindow, element: marker });
         }
 
         return marker;
@@ -145,21 +145,23 @@ export default class extends AbstractMapController<
         }
 
         if (infoWindow) {
-            this.createInfoWindowPolygon({ definition: infoWindow, polygon });
+            this.createInfoWindow({ definition: infoWindow, element: polygon });
         }
 
         return polygon;
     }
 
-    protected doCreateInfoWindowMarker({
+    protected doCreateInfoWindow({
         definition,
-        marker,
+        element,
     }: {
-        definition: MarkerDefinition<
-            google.maps.marker.AdvancedMarkerElementOptions,
-            google.maps.InfoWindowOptions
-        >['infoWindow'];
-        marker: google.maps.marker.AdvancedMarkerElement;
+        definition:
+            | MarkerDefinition<
+                  google.maps.marker.AdvancedMarkerElementOptions,
+                  google.maps.InfoWindowOptions
+              >['infoWindow']
+            | PolygonDefinition<google.maps.Polygon, google.maps.InfoWindowOptions>['infoWindow'];
+        element: google.maps.marker.AdvancedMarkerElement | google.maps.Polygon;
     }): google.maps.InfoWindow {
         const { headerContent, content, extra, rawOptions = {}, ...otherOptions } = definition;
 
@@ -170,53 +172,22 @@ export default class extends AbstractMapController<
             ...rawOptions,
         });
 
-        if (definition.opened) {
-            infoWindow.open({
-                map: this.map,
-                shouldFocus: false,
-                anchor: marker,
+        if (element instanceof google.maps.marker.AdvancedMarkerElement) {
+            element.addListener('click', () => {
+                if (definition.autoClose) this.closeInfoWindowsExcept(infoWindow);
+                infoWindow.open({ map: this.map, anchor: element });
+            });
+
+            if (definition.opened) {
+                infoWindow.open({ map: this.map, anchor: element });
+            }
+        } else if (element instanceof google.maps.Polygon) {
+            element.addListener('click', (event: any) => {
+                if (definition.autoClose) this.closeInfoWindowsExcept(infoWindow);
+                infoWindow.setPosition(event.latLng);
+                infoWindow.open(this.map);
             });
         }
-
-        marker.addListener('click', () => {
-            if (definition.autoClose) {
-                this.closeInfoWindowsExcept(infoWindow);
-            }
-
-            infoWindow.open({
-                map: this.map,
-                anchor: marker,
-            });
-        });
-
-        return infoWindow;
-    }
-
-    protected doCreateInfoWindowPolygon({
-        definition,
-        polygon,
-    }: {
-        definition: MarkerDefinition<google.maps.Polygon, google.maps.InfoWindowOptions>['infoWindow'];
-        polygon: google.maps.Polygon;
-    }): google.maps.InfoWindow {
-        const { headerContent, content, extra, rawOptions = {}, ...otherOptions } = definition;
-
-        const infoWindow = new _google.maps.InfoWindow({
-            headerContent: this.createTextOrElement(headerContent),
-            content: this.createTextOrElement(content),
-            ...otherOptions,
-            ...rawOptions,
-        });
-
-        polygon.addListener('click', (event: any) => {
-            if (definition.autoClose) {
-                this.closeInfoWindowsExcept(infoWindow);
-            }
-
-            infoWindow.setPosition(event.latLng);
-
-            infoWindow.open(this.map);
-        });
 
         return infoWindow;
     }
