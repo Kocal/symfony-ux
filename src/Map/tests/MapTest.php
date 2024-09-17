@@ -193,7 +193,6 @@ class MapTest extends TestCase
                     'title' => 'Polygon 1',
                     'infoWindow' => null,
                     'extra' => $array['polygons'][0]['extra'],
-                    'rawOptions' => $array['polygons'][0]['rawOptions'],
                 ],
                 [
                     'points' => [
@@ -211,7 +210,6 @@ class MapTest extends TestCase
                         'extra' => $array['polygons'][1]['infoWindow']['extra'],
                     ],
                     'extra' => $array['polygons'][1]['extra'],
-                    'rawOptions' => $array['polygons'][1]['rawOptions'],
                 ],
             ],
         ], $array);
