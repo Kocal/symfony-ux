@@ -58,10 +58,9 @@ class default_1 extends AbstractMapController {
     }
     doCreatePolygon(definition) {
         const { points, title, infoWindow, rawOptions = {}, extra } = definition;
-        const latLngs = points.map((point) => ({ lat: point.lat, lng: point.lng }));
         const polygon = new _google.maps.Polygon({
             ...rawOptions,
-            paths: latLngs,
+            paths: points,
             map: this.map,
         });
         if (title) {
@@ -97,6 +96,14 @@ class default_1 extends AbstractMapController {
                 infoWindow.setPosition(event.latLng);
                 infoWindow.open(this.map);
             });
+            if (definition.opened) {
+                const bounds = new google.maps.LatLngBounds();
+                element.getPath().forEach((point) => {
+                    bounds.extend(point);
+                });
+                infoWindow.setPosition(bounds.getCenter());
+                infoWindow.open({ map: this.map, anchor: element });
+            }
         }
         return infoWindow;
     }

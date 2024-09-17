@@ -132,11 +132,9 @@ export default class extends AbstractMapController<
     ): google.maps.Polygon {
         const { points, title, infoWindow, rawOptions = {}, extra } = definition;
 
-        const latLngs = points.map((point) => ({ lat: point.lat, lng: point.lng }));
-
         const polygon = new _google.maps.Polygon({
             ...rawOptions,
-            paths: latLngs,
+            paths: points,
             map: this.map,
         });
 
@@ -187,6 +185,15 @@ export default class extends AbstractMapController<
                 infoWindow.setPosition(event.latLng);
                 infoWindow.open(this.map);
             });
+
+            if (definition.opened) {
+                const bounds = new google.maps.LatLngBounds();
+                element.getPath().forEach((point: google.maps.LatLng) => {
+                    bounds.extend(point);
+                });
+                infoWindow.setPosition(bounds.getCenter());
+                infoWindow.open({ map: this.map, anchor: element });
+            }
         }
 
         return infoWindow;
