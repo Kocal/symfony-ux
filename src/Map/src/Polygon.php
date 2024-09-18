@@ -11,6 +11,8 @@
 
 namespace Symfony\UX\Map;
 
+use Symfony\UX\Map\Exception\InvalidArgumentException;
+
 /**
  * Represents a polygon on a map.
  *
@@ -40,5 +42,29 @@ final readonly class Polygon
             'infoWindow' => $this->infoWindow?->toArray(),
             'extra' => (object) $this->extra,
         ];
+    }
+
+    /**
+     * @param array{
+     *     points: array<array{lat: float, lng: float}>,
+     *     title: string|null,
+     *     infoWindow: array<string, mixed>|null,
+     *     extra: object,
+     * } $polygon
+     *
+     * @internal
+     */
+    public static function fromArray(array $polygon): self
+    {
+        if (!isset($polygon['points'])) {
+            throw new InvalidArgumentException('The "points" parameter is required.');
+        }
+        $polygon['points'] = array_map(Point::fromArray(...), $polygon['points']);
+
+        if (isset($polygon['infoWindow'])) {
+            $polygon['infoWindow'] = InfoWindow::fromArray($polygon['infoWindow']);
+        }
+
+        return new self(...$polygon);
     }
 }

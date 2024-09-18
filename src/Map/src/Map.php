@@ -122,6 +122,7 @@ final class Map
      *     center?: array{lat: float, lng: float},
      *     zoom?: float,
      *     markers?: list<array>,
+     *     polygons?: list<array>,
      *     fitBoundsToMarkers?: bool,
      *     options?: object,
      * } $map
@@ -145,6 +146,12 @@ final class Map
             throw new InvalidArgumentException('The "markers" parameter must be an array.');
         }
         $map['markers'] = array_map(Marker::fromArray(...), $map['markers']);
+
+        $map['polygons'] ??= [];
+        if (!\is_array($map['polygons'])) {
+            throw new InvalidArgumentException('The "polygons" parameter must be an array.');
+        }
+        $map['polygons'] = array_map(Polygon::fromArray(...), $map['polygons']);
 
         return new self(...$map);
     }
