@@ -17,6 +17,7 @@ use Symfony\UX\Map\Map;
 use Symfony\UX\Map\Marker;
 use Symfony\UX\Map\Point;
 use Symfony\UX\Map\Polygon;
+use Symfony\UX\Map\Polyline;
 use Symfony\UX\Map\Test\RendererTestCase;
 use Symfony\UX\StimulusBundle\Helper\StimulusHelper;
 
@@ -55,6 +56,14 @@ class LeafletRendererTest extends RendererTestCase
             'map' => (clone $map)
                 ->addPolygon(new Polygon(points: [new Point(48.8566, 2.3522), new Point(48.8566, 2.3522), new Point(48.8566, 2.3522)]))
                 ->addPolygon(new Polygon(points: [new Point(1.1, 2.2), new Point(3.3, 4.4), new Point(5.5, 6.6)], infoWindow: new InfoWindow(content: 'Polygon'))),
+        ];
+
+        yield 'with polylines and infoWindows' => [
+            'expected_render' => '<div data-controller="symfony--ux-leaflet-map--map" data-symfony--ux-leaflet-map--map-provider-options-value="{}" data-symfony--ux-leaflet-map--map-center-value="{&quot;lat&quot;:48.8566,&quot;lng&quot;:2.3522}" data-symfony--ux-leaflet-map--map-zoom-value="12" data-symfony--ux-leaflet-map--map-fit-bounds-to-markers-value="false" data-symfony--ux-leaflet-map--map-options-value="{&quot;tileLayer&quot;:{&quot;url&quot;:&quot;https:\/\/tile.openstreetmap.org\/{z}\/{x}\/{y}.png&quot;,&quot;attribution&quot;:&quot;\u00a9 &lt;a href=\&quot;https:\/\/www.openstreetmap.org\/copyright\&quot;&gt;OpenStreetMap&lt;\/a&gt;&quot;,&quot;options&quot;:[]},&quot;@provider&quot;:&quot;leaflet&quot;}" data-symfony--ux-leaflet-map--map-markers-value="[]" data-symfony--ux-leaflet-map--map-polygons-value="[{&quot;points&quot;:[{&quot;lat&quot;:48.8566,&quot;lng&quot;:2.3522},{&quot;lat&quot;:48.8566,&quot;lng&quot;:2.3522},{&quot;lat&quot;:48.8566,&quot;lng&quot;:2.3522}],&quot;title&quot;:null,&quot;infoWindow&quot;:null,&quot;extra&quot;:[],&quot;@id&quot;:&quot;2dc7aa290e8fc88a&quot;},{&quot;points&quot;:[{&quot;lat&quot;:1.1,&quot;lng&quot;:2.2},{&quot;lat&quot;:3.3,&quot;lng&quot;:4.4},{&quot;lat&quot;:5.5,&quot;lng&quot;:6.6}],&quot;title&quot;:null,&quot;infoWindow&quot;:{&quot;headerContent&quot;:null,&quot;content&quot;:&quot;Polygon&quot;,&quot;position&quot;:null,&quot;opened&quot;:false,&quot;autoClose&quot;:true,&quot;extra&quot;:[]},&quot;extra&quot;:[],&quot;@id&quot;:&quot;d6cab193e60e5faf&quot;}]"></div>',
+            'renderer' => new LeafletRenderer(new StimulusHelper(null)),
+            'map' => (clone $map)
+                ->addPolyline(new Polyline(points: [new Point(48.8566, 2.3522), new Point(48.8566, 2.3522), new Point(48.8566, 2.3522)]))
+                ->addPolyline(new Polyline(points: [new Point(1.1, 2.2), new Point(3.3, 4.4), new Point(5.5, 6.6)], infoWindow: new InfoWindow(content: 'Polygon'))),
         ];
     }
 }
