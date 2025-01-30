@@ -1,0 +1,53 @@
+{
+    "name": "symfony/ux-toolkit",
+    "type": "symfony-bundle",
+    "description": "Quickly bootstrap your Symfony application with beautiful and ready-to-use UI components",
+    "keywords": [
+        "symfony-ux",
+        "toolkit",
+        "ui",
+        "components"
+    ],
+    "homepage": "https://symfony.com",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Hugo Alliaume",
+            "email": "hugo@alliau.me"
+        },
+        {
+            "name": "Symfony Community",
+            "homepage": "https://symfony.com/contributors"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Symfony\\UX\\Toolkit\\": "src/"
+        },
+        "exclude-from-classmap": []
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Symfony\\UX\\Toolkit\\Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": ">=8.3",
+        "symfony/ux-twig-component": "^2.21"
+    },
+    "require-dev": {
+        "symfony/framework-bundle": "^6.4|^7.0",
+        "symfony/phpunit-bridge": "^6.4|^7.0",
+        "symfony/twig-bundle": "^6.4|^7.0"
+    },
+    "conflict": {
+        "symfony/ux-twig-component": "<2.21"
+    },
+    "extra": {
+        "thanks": {
+            "name": "symfony/ux",
+            "url": "https://github.com/symfony/ux"
+        }
+    },
+    "minimum-stability": "dev"
+}
