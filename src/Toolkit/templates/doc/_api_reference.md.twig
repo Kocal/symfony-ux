@@ -1,0 +1,18 @@
+{% for component_name, ref in api_reference %}
+### `{{ '<' }}twig:{{ component_name }}{{ '>' }}`
+{% if ref.props is not empty %}
+| Prop | Type | Default |
+|:-----|:-----|:--------|
+{% for prop in ref.props %}
+| `{{ prop.name }}` | `{{ prop.type }}` | {{ prop.default is not null ? '`' ~ prop.default ~ '`' : '-' }} |
+{% endfor %}
+{% endif %}
+{% if ref.blocks is not empty %}
+
+| Block | Description |
+|:------|:------------|
+{% for block in ref.blocks %}
+| `{{ block.name }}` | {{ block.description }} |
+{% endfor %}
+{% endif %}
+{% endfor %}

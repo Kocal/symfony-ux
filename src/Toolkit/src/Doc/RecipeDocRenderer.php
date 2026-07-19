@@ -34,6 +34,11 @@ use Symfony\UX\Toolkit\Recipe\Recipe;
  * Renders a recipe's documentation as HTML (through league/commonmark and the Toolkit's extensions)
  * or as portable Markdown.
  *
+ * The body is the recipe's `doc.md` when present, otherwise a default layout. Either way, the author
+ * controls the layout and drops in the generated pieces with directives: `::: example <Name>` for a
+ * live preview, `::: installation` for the install steps, and `::: api-reference` for the props/blocks
+ * tables.
+ *
  * @author Hugo Alliaume <hugo@alliau.me>
  */
 final class RecipeDocRenderer
@@ -49,7 +54,7 @@ final class RecipeDocRenderer
 
     public function renderAsMarkdown(Kit $kit, Recipe $recipe): string
     {
-        return $this->resolveExamplesToFences($recipe, $this->renderTemplate($kit, $recipe, 'markdown'));
+        return $this->resolveExamplesToFences($recipe, $this->renderBody($kit, $recipe, 'markdown'));
     }
 
     public function renderAsHtml(Kit $kit, Recipe $recipe, PreviewUrlGenerator $previewUrlGenerator): string
@@ -65,10 +70,32 @@ final class RecipeDocRenderer
         $environment->addExtension(new FencedCodePreviewExtension());
         $environment->addExtension(new ExampleExtension($recipe));
 
-        return (string) new MarkdownConverter($environment)->convert($this->renderTemplate($kit, $recipe, 'html'));
+        return (string) new MarkdownConverter($environment)->convert($this->renderBody($kit, $recipe, 'html'));
     }
 
-    private function renderTemplate(Kit $kit, Recipe $recipe, string $format): string
+    private function renderBody(Kit $kit, Recipe $recipe, string $format): string
+    {
+        $context = $this->buildContext($kit, $recipe, $format);
+
+        $body = $recipe->doc ?? $this->defaultBody($recipe, [] !== $context['api_reference']);
+
+        return preg_replace_callback('/^::: (?<directive>installation|api-reference)\s*$/m', fn (array $matches): string => trim($this->twig->render(\sprintf('@UXToolkit/doc/_%s.md.twig', str_replace('-', '_', $matches['directive'])), $context)), $body);
+    }
+
+    private function defaultBody(Recipe $recipe, bool $hasApiReference): string
+    {
+        $body = \sprintf("# %s\n\n%s\n\n::: example Demo\n\n## Installation\n\n::: installation\n", $recipe->manifest->name, trim($recipe->manifest->description));
+        if ($hasApiReference) {
+            $body .= "\n## API Reference\n\n::: api-reference\n";
+        }
+
+        return $body;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function buildContext(Kit $kit, Recipe $recipe, string $format): array
     {
         $pool = new PoolResolver()->resolveForRecipe($kit, $recipe);
 
@@ -84,7 +111,7 @@ final class RecipeDocRenderer
             }
         }
 
-        return $this->twig->render('@UXToolkit/doc/recipe.md.twig', [
+        return [
             'kit' => $kit,
             'kit_id' => basename($kit->absolutePath),
             'recipe' => $recipe,
@@ -94,7 +121,7 @@ final class RecipeDocRenderer
             'importmap_package_dependencies' => array_values($pool->getImportmapPackageDependencies()),
             'api_reference' => $this->extractApiReference($recipe),
             'format' => $format,
-        ]);
+        ];
     }
 
     /**
@@ -127,10 +154,6 @@ final class RecipeDocRenderer
         return $apiReference;
     }
 
-    /**
-     * Replaces every `::: example <Name>` line with the example's code as a fenced block. Used for the
-     * portable Markdown output, where interactive directives are not wanted.
-     */
     private function resolveExamplesToFences(Recipe $recipe, string $markdown): string
     {
         return preg_replace_callback('/^::: example (?<rest>.+)$/m', static function (array $matches) use ($recipe): string {

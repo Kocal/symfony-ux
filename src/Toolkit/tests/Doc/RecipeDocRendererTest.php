@@ -58,6 +58,31 @@ final class RecipeDocRendererTest extends KernelTestCase
         $this->assertStringContainsString('PostLink', $html);
     }
 
+    public function testACustomDocMdControlsTheLayoutAndInjectsGeneratedContent()
+    {
+        [$kit, $recipe] = $this->loadPostLinkRecipe();
+
+        // A recipe can ship a doc.md that drives the layout, adds its own prose, and drops in the
+        // generated pieces with directives.
+        $recipe = new Recipe($recipe->name, $recipe->absolutePath, $recipe->manifest, doc: <<<'MARKDOWN'
+            ## Installation
+
+            A custom note before the install steps.
+
+            ::: installation
+            MARKDOWN);
+
+        $markdown = $this->renderer()->renderAsMarkdown($kit, $recipe);
+
+        $this->assertStringContainsString('A custom note before the install steps.', $markdown);
+        $this->assertStringContainsString('ux:install post-link --kit common', $markdown);
+        // The `::: installation` directive is replaced by the generated steps.
+        $this->assertStringNotContainsString('::: installation', $markdown);
+        // Nothing the author did not ask for: no Demo, no API reference.
+        $this->assertStringNotContainsString('## API Reference', $markdown);
+        $this->assertStringNotContainsString('```twig', $markdown);
+    }
+
     private function renderer(): RecipeDocRenderer
     {
         return new RecipeDocRenderer(self::getContainer()->get('twig'));

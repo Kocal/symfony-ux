@@ -16,7 +16,7 @@ use Symfony\UX\Toolkit\Doc\MdTwigConverter;
 
 final class MdTwigConverterTest extends TestCase
 {
-    public function testConvertsExamplesBlockAndDropsScaffolding()
+    public function testProducesTheFullDocumentBodyWithDirectives(): void
     {
         $doc = MdTwigConverter::convert(<<<'TWIG'
             {% extends 'toolkit/docs/_base_component.md.twig' %}
@@ -36,32 +36,37 @@ final class MdTwigConverterTest extends TestCase
 
             {{ toolkit_code_example(kit_id.value, component.name, 'RTL', {height: '450px', collapseClass: true}) }}
             {% endblock %}
-            TWIG);
+            TWIG, 'Alert', 'Displays a callout for user attention.');
 
-        // Twig scaffolding stripped, examples block becomes a section.
         $this->assertStringNotContainsString('{%', $doc);
         $this->assertStringNotContainsString('toolkit_code_', $doc);
-        $this->assertStringContainsString("## Examples\n", $doc);
+
+        // The doc.md is self-contained: it opens with the recipe title and description.
+        $this->assertStringStartsWith("# Alert\n\nDisplays a callout for user attention.", $doc);
+        // The demo, installation and API reference are laid out around the authored examples.
+        $this->assertStringContainsString('::: example Demo {"height": "300px"}', $doc);
+        $this->assertStringContainsString("## Installation\n\n::: installation", $doc);
+        $this->assertStringContainsString("## API Reference\n\n::: api-reference", $doc);
+
+        // The examples block becomes an "Examples" section made of `::: example` directives.
+        $this->assertStringContainsString('## Examples', $doc);
         $this->assertStringContainsString('### Basic', $doc);
         $this->assertStringContainsString('A basic alert.', $doc);
-
-        // toolkit_code_example(...) -> ::: example with JSON options.
         $this->assertStringContainsString('::: example Basic', $doc);
         $this->assertStringContainsString('::: example RTL {"height": "450px", "collapseClass": true}', $doc);
-
-        // The demo block is dropped (the recipe template regenerates the Demo).
-        $this->assertStringNotContainsString('example Demo', $doc);
     }
 
-    public function testConvertsUsageBlock()
+    public function testConvertsUsageBlock(): void
     {
         $doc = MdTwigConverter::convert(<<<'TWIG'
             {% block usage %}
             {{ toolkit_code_usage(kit_id.value, component.name) }}
             {% endblock %}
-            TWIG);
+            TWIG, 'Button', 'A button.');
 
-        $this->assertStringContainsString('## Usage', $doc);
-        $this->assertStringContainsString('::: example Usage', $doc);
+        $this->assertStringContainsString("## Usage\n\n::: example Usage", $doc);
+        // Installation and API reference are always laid out.
+        $this->assertStringContainsString('::: installation', $doc);
+        $this->assertStringContainsString('::: api-reference', $doc);
     }
 }
