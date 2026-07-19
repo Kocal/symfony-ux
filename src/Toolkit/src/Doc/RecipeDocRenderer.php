@@ -84,7 +84,7 @@ final class RecipeDocRenderer
 
     private function defaultBody(Recipe $recipe, bool $hasApiReference): string
     {
-        $body = \sprintf("# %s\n\n%s\n\n::: example Demo\n\n## Installation\n\n::: installation\n", $recipe->manifest->name, trim($recipe->manifest->description));
+        $body = \sprintf("# %s\n\n::: example Demo\n\n## Installation\n\n::: installation\n", $recipe->manifest->name);
         if ($hasApiReference) {
             $body .= "\n## API Reference\n\n::: api-reference\n";
         }

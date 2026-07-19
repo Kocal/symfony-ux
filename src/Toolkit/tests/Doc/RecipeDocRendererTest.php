@@ -26,8 +26,7 @@ final class RecipeDocRendererTest extends KernelTestCase
 
         $markdown = $this->renderer()->renderAsMarkdown($kit, $recipe);
 
-        // Description + install command (kit id is the kit directory name).
-        $this->assertStringContainsString('A link submitted as a form', $markdown);
+        // Install command (kit id is the kit directory name).
         $this->assertStringContainsString('ux:install post-link --kit common', $markdown);
         // Portable Markdown: examples resolved to fences, no interactive directives left.
         $this->assertStringNotContainsString('::: example', $markdown);

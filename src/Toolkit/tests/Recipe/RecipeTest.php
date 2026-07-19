@@ -27,7 +27,6 @@ final class RecipeTest extends TestCase
         new Recipe('test-recipe', 'relative/path', new RecipeManifest(
             type: RecipeType::Component,
             name: 'Test Recipe',
-            description: 'A test recipe',
             copyFiles: [],
         ));
     }
@@ -40,7 +39,6 @@ final class RecipeTest extends TestCase
         new Recipe('test-recipe', __DIR__.'/../../kits/shadcn/Table', new RecipeManifest(
             type: RecipeType::Component,
             name: 'Test Recipe',
-            description: 'A test recipe',
             copyFiles: [
                 'templates/' => '/',
             ],
@@ -52,7 +50,6 @@ final class RecipeTest extends TestCase
         $recipe = new Recipe('test-recipe', __DIR__.'/../../kits/shadcn/table', new RecipeManifest(
             type: RecipeType::Component,
             name: 'Test Recipe',
-            description: 'A test recipe',
             copyFiles: [
                 'templates/' => 'templates/',
             ],
@@ -75,7 +72,6 @@ final class RecipeTest extends TestCase
         $recipe = new Recipe('test-recipe', __DIR__.'/../../kits/shadcn/table', new RecipeManifest(
             type: RecipeType::Component,
             name: 'Test Recipe',
-            description: 'A test recipe',
             copyFiles: [
                 'templates/' => 'dest-templates/',
             ],

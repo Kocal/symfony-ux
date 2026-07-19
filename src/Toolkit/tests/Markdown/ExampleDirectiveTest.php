@@ -90,7 +90,7 @@ class ExampleDirectiveTest extends TestCase
         $recipe = new Recipe(
             'example-recipe',
             \dirname(__DIR__).'/Fixtures/markdown/example-recipe',
-            new RecipeManifest(RecipeType::Component, 'example-recipe', 'A fixture recipe.', []),
+            new RecipeManifest(RecipeType::Component, 'example-recipe', []),
         );
 
         $environment = new Environment();

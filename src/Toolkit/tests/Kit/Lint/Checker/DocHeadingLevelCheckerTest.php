@@ -40,6 +40,6 @@ final class DocHeadingLevelCheckerTest extends TestCase
 
     private function recipeManifest(string $name): RecipeManifest
     {
-        return new RecipeManifest(RecipeType::Component, $name, 'A recipe.', []);
+        return new RecipeManifest(RecipeType::Component, $name, []);
     }
 }
