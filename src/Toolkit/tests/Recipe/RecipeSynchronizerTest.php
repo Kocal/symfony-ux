@@ -31,7 +31,8 @@ final class RecipeSynchronizerTest extends TestCase
         $recipeAlert = $kit->getRecipe('alert');
         $this->assertNotNull($recipeAlert);
         $this->assertEquals('Alert', $recipeAlert->manifest->name);
-        // The alert recipe ships no doc.md yet.
-        $this->assertNull($recipeAlert->doc);
+        // The alert recipe ships a doc.md, loaded into the recipe.
+        $this->assertNotNull($recipeAlert->doc);
+        $this->assertStringContainsString('::: installation', $recipeAlert->doc);
     }
 }
