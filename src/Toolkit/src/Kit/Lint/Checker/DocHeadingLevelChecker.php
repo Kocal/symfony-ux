@@ -17,9 +17,9 @@ use Symfony\UX\Toolkit\Kit\Lint\LintIssue;
 use Symfony\UX\Toolkit\Kit\Lint\LintSeverity;
 
 /**
- * A recipe's `doc.md` is injected under the sections the doc template already renders at level 2
- * (`## Installation`, `## API Reference`, ...), so its own headings must start at level 2 too.
- * A level-1 heading (`#`) would render as a page title in the middle of the document.
+ * A recipe's `doc.md` is a self-contained document: it must open with its title as the single
+ * level-1 heading (`# Title`), then use level-2 headings (`## `) for its sections. A missing leading
+ * title, or a second level-1 heading in the body, would render as more than one page title.
  *
  * @author Hugo Alliaume <hugo@alliau.me>
  *
@@ -34,22 +34,39 @@ final class DocHeadingLevelChecker implements KitCheckerInterface
                 continue;
             }
 
-            foreach ($this->levelOneHeadings($recipe->doc) as $heading) {
+            $headings = $this->headings($recipe->doc);
+            if ([] === $headings) {
+                continue;
+            }
+
+            if (1 !== $headings[0]['level']) {
                 yield new LintIssue(
                     severity: LintSeverity::Error,
                     category: 'doc.heading_level',
-                    message: \sprintf('The "doc.md" heading "%s" must start at level 2 ("## "); its content is injected under the recipe\'s own sections.', $heading),
+                    message: \sprintf('The "doc.md" must open with its title as a level-1 heading ("# "), but starts with "%s".', $headings[0]['text']),
                     recipe: $recipe->name,
                 );
+            }
+
+            foreach (\array_slice($headings, 1) as $heading) {
+                if (1 === $heading['level']) {
+                    yield new LintIssue(
+                        severity: LintSeverity::Error,
+                        category: 'doc.heading_level',
+                        message: \sprintf('The "doc.md" heading "%s" must start at level 2 ("## "); only the title may be a level-1 heading.', $heading['text']),
+                        recipe: $recipe->name,
+                    );
+                }
             }
         }
     }
 
     /**
-     * @return iterable<string> the level-1 headings found outside fenced code blocks
+     * @return list<array{level: int, text: string}> the headings found outside fenced code blocks, in order
      */
-    private function levelOneHeadings(string $doc): iterable
+    private function headings(string $doc): array
     {
+        $headings = [];
         $insideFence = false;
 
         foreach (explode("\n", $doc) as $line) {
@@ -59,9 +76,11 @@ final class DocHeadingLevelChecker implements KitCheckerInterface
                 continue;
             }
 
-            if (!$insideFence && preg_match('/^#(?:\s|$)/', $line)) {
-                yield trim($line);
+            if (!$insideFence && preg_match('/^(?<hashes>#{1,6})(?:\s|$)/', $line, $matches)) {
+                $headings[] = ['level' => \strlen($matches['hashes']), 'text' => trim($line)];
             }
         }
+
+        return $headings;
     }
 }
