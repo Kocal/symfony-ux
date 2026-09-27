@@ -62,7 +62,7 @@ abstract class AbstractProviderFactory
         try {
             return $resolver->resolve($options);
         } catch (OptionsResolverException $e) {
-            throw new InvalidArgumentException(\sprintf('Invalid "%s" image provider DSN: %s', $dsn->getScheme(), $e->getMessage()), 0, $e);
+            throw new InvalidArgumentException($e->getMessage(), 0, $e);
         }
     }
 }

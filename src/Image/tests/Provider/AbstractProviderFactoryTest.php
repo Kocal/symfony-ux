@@ -23,7 +23,7 @@ final class AbstractProviderFactoryTest extends TestCase
     public function testAnOptionTheFactoryDoesNotSupportIsRejected(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Invalid "fake" image provider DSN: The option "driver" does not exist. Defined options are: "auto_format".');
+        $this->expectExceptionMessage('The option "driver" does not exist. Defined options are: "auto_format".');
 
         new FakeProviderFactory()->create(new Dsn('fake://default?driver=imagick'));
     }

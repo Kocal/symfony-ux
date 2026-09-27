@@ -50,7 +50,7 @@ final class RenderOptions
         }
         foreach ($breakpoints ?? [] as $breakpoint) {
             if (!\is_int($breakpoint) || $breakpoint < 1) {
-                throw new InvalidArgumentException(\sprintf('The "breakpoints" option must only contain positive integers, %s given.', json_encode($breakpoint)));
+                throw new InvalidArgumentException(\sprintf('The "breakpoints" option must only contain positive integers, "%s" given.', \is_scalar($breakpoint) ? $breakpoint : get_debug_type($breakpoint)));
             }
         }
         if (null !== $breakpoints) {

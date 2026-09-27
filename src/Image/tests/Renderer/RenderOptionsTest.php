@@ -75,8 +75,8 @@ final class RenderOptionsTest extends TestCase
 
     public static function provideInvalidBreakpoints(): iterable
     {
-        yield 'zero' => [[400, 0], 'The "breakpoints" option must only contain positive integers, 0 given.'];
-        yield 'negative' => [[-5], 'The "breakpoints" option must only contain positive integers, -5 given.'];
+        yield 'zero' => [[400, 0], 'The "breakpoints" option must only contain positive integers, "0" given.'];
+        yield 'negative' => [[-5], 'The "breakpoints" option must only contain positive integers, "-5" given.'];
         yield 'not an integer' => [['800'], 'The "breakpoints" option must only contain positive integers, "800" given.'];
     }
 
